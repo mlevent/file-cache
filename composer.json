@@ -1,0 +1,22 @@
+{
+  "name": "mlevent/file-cache",
+  "description": "PHP için basit dosya tipi cache paketi.",
+  "homepage": "https://github.com/mlevent/file-cache",
+  "license": "MIT",
+  "require": {
+    "php": "^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mlevent\\FileCache\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "mlevent",
+      "email": "ghergedan@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
