@@ -16,11 +16,21 @@ use Mlevent\FileCache\FileCache;
 
 $cache = new FileCache;
 
-$lastUpdatedTime = $cache->refreshIfExpired('lastUpdatedTime', function () {
+$updatedTime = $cache->refreshIfExpired('updatedTime', function () {
     return date("H:i:s");
-}, 30);
+});
 
-echo "Updated time {$lastUpdatedTime}";
+echo "Updated time: {$updatedTime}";
+```
+
+Önbellek dosyaları varsayılan olarak ./cache dizininde saklanır.
+
+```
+$ tree ./cache
+./cache
+└── f7
+    └── d1
+        └── 7411a1eeb3dabcc2311f04eeb5371f0f40f192f3.cache
 ```
 
 ## 📧İletişim

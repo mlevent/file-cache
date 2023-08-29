@@ -4,14 +4,12 @@ use Mlevent\FileCache\FileCache;
 
 $cache = new FileCache;
 
-$lastUpdatedTime = $cache->refreshIfExpired('lastUpdatedTime', function () {
+$updatedTime = $cache->refresh('updatedTime', function () {
     return date("H:i:s");
 });
 
-echo "Updated time {$lastUpdatedTime}";
+echo "Updated time: {$updatedTime}";
 
 echo '<pre>';
-print_r($cache->getCacheStore());
+print_r($cache->getStore());
 echo '</pre>';
-
-$cache->flush();

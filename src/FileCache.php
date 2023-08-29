@@ -11,7 +11,7 @@ class FileCache
     /**
      * @var array
      */
-    private array $cacheStore = [];
+    private array $store = [];
 
     /**
      * __construct
@@ -38,9 +38,9 @@ class FileCache
     }
 
     /**
-     * refreshIfExpired
+     * refresh
      */
-    public function refreshIfExpired(string $name, callable $refreshCallback, int $expiration = 60) : mixed {
+    public function refresh(string $name, callable $refreshCallback, int $expiration = 60) : mixed {
         if ($this->isExpired($name)) {
             $this->delete($name);
         }
@@ -68,7 +68,7 @@ class FileCache
             'expiryTime' => time() + $expiration,
             'data'       => $data,
         ];
-        $this->addCacheStore(...$fileContent);
+        $this->addStore(...$fileContent);
         return (bool) file_put_contents($this->getFilePath($fileContent['name']), serialize($fileContent));
 	}
 
@@ -77,10 +77,10 @@ class FileCache
      */
     public function get(string $name, bool $onlyData = true) : mixed {
         if ($this->has($name)) {
-            $resolveCachedData = !$this->hasCacheStore($name)
+            $resolveCachedData = !$this->hasStore($name)
                 ? unserialize(file_get_contents($this->getFilePath($name)))
-                : $this->getCacheStore($name);
-            $this->addCacheStore(...array_merge($resolveCachedData, [
+                : $this->getStore($name);
+            $this->addStore(...array_merge($resolveCachedData, [
                 'isReadFromDisk' => true
             ]));
             return $onlyData ? $resolveCachedData['data'] : $resolveCachedData;
@@ -118,8 +118,17 @@ class FileCache
     /**
      * flush
      */
-    public function flush() : void {
-        array_map('unlink', array_filter((array) glob($this->cachePath . '/*')));
+    public function flush(?string $currentPath = null) : void {
+        $currentPath = $currentPath ?? $this->cachePath;
+        foreach(glob($currentPath . '/*') as $fileName) {
+            if (is_file($fileName)) {
+                if (str_ends_with($fileName, $this->cacheExtension)) {
+                    unlink($fileName);
+                }
+            } else {
+                $this->flush($fileName); rmdir($fileName);
+            }
+        }
     }
 
     /**
@@ -139,10 +148,10 @@ class FileCache
 	}
 
     /**
-     * pushStorage
+     * addStore
      */
-    private function addCacheStore(string $name, int $expiryTime, mixed $data, bool $isReadFromDisk = false) : void {
-        $this->cacheStore[$name] = [
+    private function addStore(string $name, int $expiryTime, mixed $data, bool $isReadFromDisk = false) : void {
+        $this->store[$name] = [
             'name'           => $name,
             'expiryTime'     => $expiryTime,
             'isReadFromDisk' => $isReadFromDisk,
@@ -151,18 +160,18 @@ class FileCache
     }
 
     /**
-     * hasCacheStore
+     * hasStore
      */
-    private function hasCacheStore(string $name) : bool {
-        return array_key_exists($name, $this->getCacheStore());
+    private function hasStore(string $name) : bool {
+        return array_key_exists($name, $this->getStore());
     }
 
     /**
-     * getCacheStore
+     * getStore
      */
-    public function getCacheStore(?string $name = null) : array {
-        return (!is_null($name) && $this->hasCacheStore($name)) 
-            ? $this->cacheStore[$name] 
-            : $this->cacheStore;
+    public function getStore(?string $name = null) : array {
+        return (!is_null($name) && $this->hasStore($name)) 
+            ? $this->store[$name] 
+            : $this->store;
     }
 }
