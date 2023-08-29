@@ -72,7 +72,7 @@ $cache->has(string $name);
 /**
  * @return bool
  */
-$cache->delete();
+$cache->delete(string $name);
 
 /**
  * @return void
