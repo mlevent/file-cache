@@ -6,10 +6,12 @@ $cache = new FileCache;
 
 $lastUpdatedTime = $cache->refreshIfExpired('lastUpdatedTime', function () {
     return date("H:i:s");
-}, 4);
+});
 
 echo "Updated time {$lastUpdatedTime}";
 
 echo '<pre>';
 print_r($cache->getCacheStore());
 echo '</pre>';
+
+$cache->flush();

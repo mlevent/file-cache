@@ -8,9 +8,18 @@ use Mlevent\FileCache\Exceptions\FileCacheException;
 
 class FileCache
 {
-    private array  $cacheStore     = [];
-    private string $cachePath      = 'cache';
-    private string $cacheExtension = '.cache';
+    /**
+     * @var array
+     */
+    private array $cacheStore = [];
+
+    /**
+     * __construct
+     */
+    public function __construct(
+        private string $cachePath      = 'cache',
+        private string $cacheExtension = '.cache',
+    ) {}
 
     /**
      * setCachePath
@@ -35,12 +44,12 @@ class FileCache
         if ($this->isExpired($name)) {
             $this->delete($name);
         }
-        if ($cache = $this->get($name)) {
-            return $cache;
-        } else {
+        if (!$cache = $this->get($name)) {
             $runCallback = $refreshCallback();
             $this->put($name, $runCallback, $expiration);
             return $runCallback;
+        } else {
+            return $cache;
         }
     }
 
@@ -51,7 +60,7 @@ class FileCache
         if (!$expiration) {
             return false;
         }
-        if (!is_dir($this->cachePath) && !mkdir($this->cachePath, 0755, true)) {
+        if (!is_dir($this->getFilePath($name, true)) && !mkdir($this->getFilePath($name, true), 0755, true)) {
             throw new FileCacheException('Failed to create cache folder.');
         }
         $fileContent = [
@@ -109,21 +118,24 @@ class FileCache
     /**
      * flush
      */
-    public function flush() : int {
-        $affectedRows = 0;
-        foreach(glob($this->cachePath . '/*') as $fileName) {
-            if (is_file($fileName) && str_ends_with($fileName, $this->cacheExtension)) {
-                unlink($fileName); $affectedRows++;
-            }
-        }
-        return $affectedRows;
+    public function flush() : void {
+        array_map('unlink', array_filter((array) glob($this->cachePath . '/*')));
     }
 
     /**
      * getFilePath
      */
-    private function getFilePath(string $name) : string {
-        return join(DIRECTORY_SEPARATOR, [$this->cachePath, sha1($name, false) . $this->cacheExtension]);
+    private function getFilePath(string $name, bool $onlyPath = false) : string {
+        $hash = sha1($name, false);
+        $dirs = [
+            $this->cachePath,
+            substr($hash, 0, 2),
+            substr($hash, 2, 2),
+        ];
+        if (!$onlyPath) {
+            array_push($dirs, $hash . $this->cacheExtension);
+        }
+        return join(DIRECTORY_SEPARATOR, $dirs);
 	}
 
     /**
