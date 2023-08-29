@@ -1,5 +1,14 @@
-<h1 align="center">File Cache</h1>
-<p align="center">PHP için basit dosya tipi cache paketi.</p>
+<h1 align="center">🗳️ file-cache</h1>
+<p align="center">PHP için basit, dosya tipi önbellek sınıfı.</p>
+<p align="center">
+<img src="https://img.shields.io/packagist/dependency-v/mlevent/file-cache/php?style=plastic"/>
+<img src="https://img.shields.io/packagist/v/mlevent/file-cache?style=plastic"/>
+<img src="https://img.shields.io/github/last-commit/mlevent/file-cache?style=plastic"/>
+<img src="https://img.shields.io/github/issues/mlevent/file-cache?style=plastic"/>
+<img src="https://img.shields.io/packagist/dt/mlevent/file-cache?style=plastic"/>
+<img src="https://img.shields.io/github/stars/mlevent/file-cache?style=plastic"/>
+<img src="https://img.shields.io/github/forks/mlevent/file-cache?style=plastic"/>
+</p>
 
 ## Kurulum
 
@@ -36,16 +45,17 @@ $ tree ./cache
 ```php
 use Mlevent\FileCache\FileCache;
 
+// Önbellek dosyaları ./cache dizininde saklanacak
 $cache = new FileCache('./cache');
 
-// Önbellek süresi dolduysa
+// Geçerlilik süresi dolduysa
 if ($cache->isExpired('updatedTime')) {
 
-    // 60 saniye geçerliliği olacak yeni bir dosya oluştur
+    // Geçerlilik süresini 60 saniye daha uzat ve yeni veriyi yaz
     $cache->put('updatedTime', date("H:i:s"), 60);
 }
 
-// Önbellekten getir
+// Veriyi önbellekten oku
 $updatedTime = $cache->get('updatedTime');
 
 echo "Updated time: {$updatedTime}";
