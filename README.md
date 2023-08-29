@@ -27,7 +27,7 @@ $cache = new FileCache;
 
 $updatedTime = $cache->refresh('updatedTime', function () {
     return date("H:i:s");
-});
+}, 60);
 
 echo "Updated time: {$updatedTime}";
 ```
