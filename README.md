@@ -16,14 +16,14 @@ use Mlevent\FileCache\FileCache;
 
 $cache = new FileCache;
 
-$updatedTime = $cache->refreshIfExpired('updatedTime', function () {
+$updatedTime = $cache->refresh('updatedTime', function () {
     return date("H:i:s");
 });
 
 echo "Updated time: {$updatedTime}";
 ```
 
-Önbellek dosyaları varsayılan olarak ./cache dizininde saklanır.
+Önbellek dosyaları varsayılan olarak `./cache` dizininde saklanır;
 
 ```
 $ tree ./cache
@@ -31,6 +31,24 @@ $ tree ./cache
 └── f7
     └── d1
         └── 7411a1eeb3dabcc2311f04eeb5371f0f40f192f3.cache
+```
+
+```php
+use Mlevent\FileCache\FileCache;
+
+$cache = new FileCache('./cache');
+
+// Önbellek süresi dolduysa
+if ($cache->isExpired('updatedTime')) {
+
+    // 60 saniye geçerliliği olacak yeni bir dosya oluştur
+    $cache->put('updatedTime', date("H:i:s"), 60);
+}
+
+// Önbellekten getir
+$updatedTime = $cache->get('updatedTime');
+
+echo "Updated time: {$updatedTime}";
 ```
 
 ## 📧İletişim
