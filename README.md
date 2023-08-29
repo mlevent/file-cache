@@ -42,6 +42,8 @@ $ tree ./cache
         └── 7411a1eeb3dabcc2311f04eeb5371f0f40f192f3.cache
 ```
 
+Geleneksel kullanım şekline örnek olarak;
+
 ```php
 use Mlevent\FileCache\FileCache;
 
@@ -59,6 +61,28 @@ if ($cache->isExpired('updatedTime')) {
 $updatedTime = $cache->get('updatedTime');
 
 echo "Updated time: {$updatedTime}";
+```
+
+```php
+/**
+ * @return bool
+ */
+$cache->has(string $name);
+
+/**
+ * @return bool
+ */
+$cache->delete();
+
+/**
+ * @return void
+ */
+$cache->flush();
+
+/**
+ * @return array
+ */
+$cache->getStore();
 ```
 
 ## 📧İletişim
